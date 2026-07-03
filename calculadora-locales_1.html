@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Locales SB">
+<meta name="theme-color" content="#0f0f0f">
+<title>Locales San Bartolo</title>
+
+<!-- Ícono PWA inline como SVG data URI -->
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='115' fill='%230f0f0f'/%3E%3Crect x='60' y='60' width='392' height='392' rx='80' fill='%231a1a1a'/%3E%3Ctext x='256' y='300' font-family='Arial' font-size='220' font-weight='bold' fill='%23f5c518' text-anchor='middle'%3ES%2F%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='115' fill='%230f0f0f'/%3E%3Ctext x='256' y='330' font-family='Arial' font-size='220' font-weight='bold' fill='%23f5c518' text-anchor='middle'%3ES%2F%3C/text%3E%3C/svg%3E">
+
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0f0f;
+    --surface: #1a1a1a;
+    --surface2: #242424;
+    --border: #2e2e2e;
+    --accent: #f5c518;
+    --accent2: #e8f55c;
+    --text: #f0ede8;
+    --muted: #888;
+    --green: #4ade80;
+    --red: #f87171;
+    --blue: #60a5fa;
+    --orange: #fb923c;
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bot: env(safe-area-inset-bottom, 0px);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; overscroll-behavior: none; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    padding-top: calc(var(--safe-top) + 16px);
+    padding-bottom: calc(var(--safe-bot) + 80px);
+    padding-left: 16px;
+    padding-right: 16px;
+    max-width: 480px;
+    margin: 0 auto;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* INSTALL BANNER */
+  #installBanner {
+    display: none;
+    background: var(--surface);
+    border: 1px solid var(--accent);
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 16px;
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--text);
+  }
+  #installBanner strong { color: var(--accent); display: block; margin-bottom: 4px; font-size: 13px; }
+  #installBanner .close-banner {
+    float: right;
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 18px;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    margin-top: -2px;
+  }
+
+  /* HEADER */
+  header {
+    text-align: center;
+    margin-bottom: 24px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--border);
+  }
+  header .label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  header h1 { font-size: 22px; font-weight: 600; }
+  header h1 span { color: var(--accent); }
+  header p { margin-top: 4px; color: var(--muted); font-size: 12px; }
+
+  /* TABS */
+  .tabs {
+    display: flex;
+    gap: 4px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 4px;
+    margin-bottom: 24px;
+    position: sticky;
+    top: calc(var(--safe-top) + 8px);
+    z-index: 10;
+  }
+  .tab {
+    flex: 1;
+    text-align: center;
+    padding: 10px 6px;
+    border-radius: 9px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--muted);
+    border: none;
+    background: transparent;
+    /* Área táctil grande para iPhone */
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .tab.active { background: var(--accent); color: #000; }
+
+  .view { display: none; }
+  .view.active { display: block; }
+
+  .section-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* RECIBOS */
+  .recibos-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .recibo-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+    position: relative;
+    overflow: hidden;
+  }
+  .recibo-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+  .recibo-card.agua::before { background: var(--blue); }
+  .recibo-card.kwh-card { grid-column: 1 / -1; }
+  .recibo-card.kwh-card::before { background: var(--orange); }
+  .recibo-card .icon { font-size: 18px; margin-bottom: 6px; }
+  .recibo-card label { display: block; font-size: 10px; color: var(--muted); margin-bottom: 5px; }
+  .prefix { display: flex; align-items: center; }
+  .prefix-sym {
+    font-family: 'Space Mono', monospace;
+    color: var(--muted);
+    font-size: 13px;
+    padding: 12px 0 12px 10px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-right: none;
+    border-radius: 8px 0 0 8px;
+  }
+  .prefix input {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-left: none;
+    border-radius: 0 8px 8px 0;
+    padding: 12px 10px;
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    font-size: 16px;
+    font-weight: 700;
+    outline: none;
+    width: 100%;
+    min-height: 44px;
+    -webkit-appearance: none;
+  }
+  .prefix input:focus { border-color: var(--accent); }
+  .kwh-preview {
+    margin-top: 8px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    background: var(--surface2);
+    border-radius: 8px;
+    padding: 7px 10px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .kwh-preview b { color: var(--orange); }
+
+  /* LOCALES */
+  .locales-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+  .local-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; }
+  .local-header { display: flex; align-items: center; gap: 9px; margin-bottom: 12px; }
+  .local-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+  .local-name { font-weight: 600; font-size: 14px; flex: 1; }
+  .local-name small { display: block; font-size: 11px; color: var(--muted); font-weight: 400; }
+  .local-fields { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 7px; }
+  .field label { display: block; font-size: 10px; color: var(--muted); margin-bottom: 4px; }
+  .field input {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 9px;
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    outline: none;
+    min-height: 44px;
+    -webkit-appearance: none;
+  }
+  .field input:focus { border-color: var(--accent); }
+  .field input[readonly] { opacity: 0.55; }
+  .kwh-calc {
+    grid-column: 1 / -1;
+    background: var(--surface2);
+    border-radius: 8px;
+    padding: 7px 10px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .kwh-val { color: var(--accent); font-weight: 700; font-size: 12px; }
+
+  .agua-pct-info { font-size: 12px; color: var(--muted); margin-bottom: 12px; line-height: 1.5; }
+  .pct-total { font-family: 'Space Mono', monospace; font-size: 12px; padding: 7px 12px; border-radius: 8px; margin-top: 6px; display: flex; justify-content: space-between; }
+  .pct-total.ok { background: rgba(74,222,128,0.1); color: var(--green); }
+  .pct-total.error { background: rgba(248,113,113,0.1); color: var(--red); }
+
+  .mes-input-wrap { margin-bottom: 20px; }
+  .mes-input-wrap input {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 13px 14px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    outline: none;
+    min-height: 44px;
+    -webkit-appearance: none;
+  }
+  .mes-input-wrap input:focus { border-color: var(--accent); }
+
+  /* BOTÓN CALCULAR */
+  .calc-btn {
+    width: 100%;
+    background: var(--accent);
+    color: #000;
+    border: none;
+    border-radius: 14px;
+    padding: 16px;
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.15s;
+    margin-bottom: 24px;
+    min-height: 52px;
+    -webkit-appearance: none;
+  }
+  .calc-btn:active { transform: scale(0.98); background: var(--accent2); }
+
+  /* RESULTADOS */
+  .resultados { display: none; }
+  .resultados.visible { display: block; }
+
+  .resultado-card { border-radius: 12px; padding: 16px; margin-bottom: 10px; border: 1px solid transparent; background: var(--surface); }
+  .resultado-header { display: flex; align-items: center; gap: 9px; margin-bottom: 10px; }
+  .resultado-nombre { font-weight: 600; font-size: 14px; flex: 1; }
+  .resultado-total { font-family: 'Space Mono', monospace; font-size: 20px; font-weight: 700; color: var(--accent); margin-bottom: 10px; }
+  .resultado-desglose { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+  .desglose-item { background: rgba(255,255,255,0.04); border-radius: 8px; padding: 9px 11px; display: flex; flex-direction: column; gap: 2px; }
+  .desglose-label { font-size: 10px; color: var(--muted); }
+  .desglose-val { font-family: 'Space Mono', monospace; font-size: 13px; font-weight: 700; }
+
+  .resumen-total {
+    background: var(--accent);
+    color: #000;
+    border-radius: 14px;
+    padding: 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  .resumen-total .rlabel { font-size: 11px; font-weight: 700; }
+  .resumen-total .val { font-family: 'Space Mono', monospace; font-size: 22px; font-weight: 700; }
+
+  /* GUARDAR */
+  .guardar-section { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 20px; }
+  .guardar-section h3 { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+  .guardar-section p { font-size: 11px; color: var(--muted); margin-bottom: 12px; line-height: 1.5; }
+  .guardar-btns { display: flex; gap: 8px; }
+  .btn-guardar {
+    flex: 1;
+    background: var(--green);
+    color: #000;
+    border: none;
+    border-radius: 10px;
+    padding: 12px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    min-height: 44px;
+    -webkit-appearance: none;
+  }
+  .btn-guardar:active { opacity: 0.75; }
+  .btn-notas {
+    flex: 1;
+    background: var(--surface2);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    text-align: center;
+    min-height: 44px;
+    -webkit-appearance: none;
+  }
+  .btn-notas:active { background: var(--border); }
+
+  /* MENSAJES */
+  .msg-local-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 10px; }
+  .msg-local-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .msg-local-nombre { font-size: 13px; font-weight: 600; flex: 1; }
+  .msg-text {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    line-height: 1.8;
+    white-space: pre-wrap;
+    word-break: break-word;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+  .copy-msg-btn {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    min-height: 44px;
+    -webkit-appearance: none;
+  }
+  .copy-msg-btn:active { background: var(--border); }
+
+  /* HISTORIAL */
+  .historial-empty { text-align: center; padding: 48px 20px; color: var(--muted); font-size: 13px; line-height: 1.8; }
+  .historial-empty span { font-size: 32px; display: block; margin-bottom: 12px; }
+  .hist-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 10px; }
+  .hist-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .hist-mes { font-weight: 700; font-size: 14px; }
+  .hist-fecha { font-size: 10px; color: var(--muted); font-family: 'Space Mono', monospace; }
+  .hist-total { font-family: 'Space Mono', monospace; font-size: 18px; font-weight: 700; color: var(--accent); margin-bottom: 10px; }
+  .hist-locales { display: flex; flex-direction: column; gap: 5px; }
+  .hist-local { display: flex; justify-content: space-between; font-size: 12px; padding: 6px 8px; background: var(--surface2); border-radius: 6px; }
+  .hist-local .hn { color: var(--muted); }
+  .hist-local .hv { font-family: 'Space Mono', monospace; font-weight: 700; }
+  .hist-actions { display: flex; gap: 7px; margin-top: 10px; }
+  .hist-del {
+    background: rgba(248,113,113,0.1);
+    color: var(--red);
+    border: 1px solid rgba(248,113,113,0.2);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 11px;
+    cursor: pointer;
+    font-family: 'Space Mono', monospace;
+    min-height: 44px;
+    -webkit-appearance: none;
+  }
+  .hist-del:active { background: rgba(248,113,113,0.25); }
+  .hist-notas {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 11px;
+    cursor: pointer;
+    font-family: 'Space Mono', monospace;
+    color: var(--text);
+    text-align: center;
+    min-height: 44px;
+    -webkit-appearance: none;
+  }
+  .hist-notas:active { background: var(--border); }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: calc(var(--safe-bot) + 28px);
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--green);
+    color: #000;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 12px 22px;
+    border-radius: 30px;
+    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    z-index: 999;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- Banner de instalación -->
+<div id="installBanner">
+  <button class="close-banner" onclick="cerrarBanner()">×</button>
+  <strong>📲 Agregar a pantalla de inicio</strong>
+  Toca el botón <strong>Compartir ⬆️</strong> de Safari y selecciona <strong>"Agregar a pantalla de inicio"</strong> para usarla como app.
+</div>
+
+<header>
+  <div class="label">San Bartolo</div>
+  <h1>Locales — <span>Cobros</span></h1>
+  <p>Luz por consumo · Agua por porcentaje</p>
+</header>
+
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('calc')">⚡ Calcular</button>
+  <button class="tab" onclick="switchTab('hist')">📁 Historial</button>
+</div>
+
+<!-- ===== CALCULADORA ===== -->
+<div class="view active" id="view-calc">
+
+  <div class="section-title">Período</div>
+  <div class="mes-input-wrap">
+    <input type="text" id="mes" placeholder="Ej: Mayo 2025" autocomplete="off" />
+  </div>
+
+  <div class="section-title">Tarifas y recibos</div>
+  <div class="recibos-grid">
+    <div class="recibo-card agua">
+      <div class="icon">💧</div>
+      <label>Total recibo AGUA (S/)</label>
+      <div class="prefix">
+        <span class="prefix-sym">S/</span>
+        <input type="number" id="totalAgua" placeholder="0.00" min="0" step="0.01" inputmode="decimal">
+      </div>
+    </div>
+    <div class="recibo-card kwh-card">
+      <div class="icon">🔌</div>
+      <label>Precio por kWh — tarifa del recibo (S/)</label>
+      <div class="prefix">
+        <span class="prefix-sym">S/</span>
+        <input type="number" id="preciokwh" placeholder="0.000" min="0" step="0.001" inputmode="decimal" oninput="actualizarPreviewKwh()">
+      </div>
+      <div class="kwh-preview" id="kwhPreview" style="display:none">
+        <span>100 kWh × tarifa =</span><b id="kwhPreviewVal">—</b>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">Lecturas de luz</div>
+  <div class="locales-list" id="localesList"></div>
+
+  <div class="section-title">Porcentajes de agua</div>
+  <p class="agua-pct-info">Deben sumar 100%. Ajusta si el acuerdo cambia entre meses.</p>
+  <div class="locales-list" id="aguaList"></div>
+
+  <button class="calc-btn" onclick="calcular()">▶ CALCULAR COBROS</button>
+
+  <div class="resultados" id="resultados">
+
+    <div class="section-title">Resultado del mes</div>
+    <div id="cardsResultado"></div>
+
+    <div class="resumen-total">
+      <div>
+        <div class="rlabel">TOTAL A COBRAR</div>
+        <div style="font-size:10px;opacity:0.6;margin-top:2px">Luz + Agua + Internet</div>
+      </div>
+      <div class="val" id="totalCobrar">S/ 0.00</div>
+    </div>
+
+    <div class="guardar-section">
+      <h3>💾 Guardar registro</h3>
+      <p>Guárdalo en el historial o descarga el Excel para abrirlo en Numbers.</p>
+      <div class="guardar-btns">
+        <button class="btn-guardar" onclick="guardarHistorial()">💾 Guardar</button>
+        <button class="btn-notas" onclick="exportarXlsx()">📊 Excel</button>
+      </div>
+    </div>
+
+    <div class="section-title">Mensajes para cada local</div>
+    <p class="agua-pct-info" style="margin-bottom:14px">Copia y pega directo al WhatsApp de cada local.</p>
+    <div id="mensajesSection"></div>
+
+  </div>
+</div>
+
+<!-- ===== HISTORIAL ===== -->
+<div class="view" id="view-hist">
+  <div class="section-title">Registros guardados</div>
+  <div id="historialList"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── DATOS ─────────────────────────────────────────────
+const locales = [
+  { id: 'farmacia', nombre: 'Farmacia de Yoni', color: '#f5c518', internet: 50 },
+  { id: 'fuente',   nombre: 'Fuente de Soda',   color: '#60a5fa', sub: 'Rosaura', internet: 40 },
+  { id: 'notaria',  nombre: 'Notaría',            color: '#c084fc', internet: 0 },
+  { id: 'makis',    nombre: 'Makis de Anthony',  color: '#4ade80', internet: 0 },
+];
+const defaultPct    = [25, 25, 25, 25];
+const ORDEN_EXCEL   = ['farmacia','fuente','notaria','makis'];
+let ultimosResultados = null;
+
+// ── BANNER INSTALACIÓN (solo Safari no standalone) ────
+function initBanner() {
+  const isIOS        = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isStandalone = window.navigator.standalone === true;
+  const yaVisto      = localStorage.getItem('banner_cerrado');
+  if (isIOS && !isStandalone && !yaVisto) {
+    document.getElementById('installBanner').style.display = 'block';
+  }
+}
+function cerrarBanner() {
+  document.getElementById('installBanner').style.display = 'none';
+  localStorage.setItem('banner_cerrado', '1');
+}
+
+// ── TABS ──────────────────────────────────────────────
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', ['calc','hist'][i] === tab));
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + tab).classList.add('active');
+  window.scrollTo(0,0);
+  if (tab === 'hist') renderHistorial();
+}
+
+// ── BUILD INPUTS ──────────────────────────────────────
+function buildLocales() {
+  const list     = document.getElementById('localesList');
+  const aguaList = document.getElementById('aguaList');
+  locales.forEach((l, i) => {
+    const card = document.createElement('div');
+    card.className = 'local-card';
+    card.innerHTML = `
+      <div class="local-header">
+        <div class="local-dot" style="background:${l.color}"></div>
+        <div class="local-name">${l.nombre}${l.sub?`<small>${l.sub}</small>`:''}</div>
+      </div>
+      <div class="local-fields">
+        <div class="field"><label>Lect. anterior</label>
+          <input type="number" id="prev_${l.id}" placeholder="0" min="0" inputmode="decimal" oninput="calcularKwh()"></div>
+        <div class="field"><label>Lect. actual</label>
+          <input type="number" id="curr_${l.id}" placeholder="0" min="0" inputmode="decimal" oninput="calcularKwh()"></div>
+        <div class="field"><label>Consumo kWh</label>
+          <input type="number" id="kwh_${l.id}" placeholder="0" readonly></div>
+        <div class="kwh-calc">
+          <span>Del mes</span>
+          <span class="kwh-val" id="kwhval_${l.id}">— kWh</span>
+        </div>
+      </div>`;
+    list.appendChild(card);
+
+    const acard = document.createElement('div');
+    acard.className = 'local-card';
+    acard.innerHTML = `
+      <div class="local-header">
+        <div class="local-dot" style="background:${l.color}"></div>
+        <div class="local-name">${l.nombre}</div>
+      </div>
+      <div class="local-fields">
+        <div class="field"><label>% de agua</label>
+          <input type="number" id="pct_${l.id}" value="${defaultPct[i]}" min="0" max="100" step="1" inputmode="decimal" oninput="checkPct()"></div>
+      </div>`;
+    aguaList.appendChild(acard);
+  });
+  const ind = document.createElement('div');
+  ind.id = 'pctTotal'; ind.className = 'pct-total ok';
+  ind.innerHTML = '<span>Total porcentaje</span><span id="pctVal">100%</span>';
+  aguaList.appendChild(ind);
+}
+
+// ── HELPERS ───────────────────────────────────────────
+function actualizarPreviewKwh() {
+  const precio = parseFloat(document.getElementById('preciokwh').value)||0;
+  const prev   = document.getElementById('kwhPreview');
+  const val    = document.getElementById('kwhPreviewVal');
+  prev.style.display = precio > 0 ? 'flex' : 'none';
+  if (precio > 0) val.textContent = `S/ ${(100*precio).toFixed(2)}`;
+  calcularKwh();
+}
+
+function calcularKwh() {
+  const precio = parseFloat(document.getElementById('preciokwh')?.value)||0;
+  locales.forEach(l => {
+    const prev = parseFloat(document.getElementById(`prev_${l.id}`)?.value)||0;
+    const curr = parseFloat(document.getElementById(`curr_${l.id}`)?.value)||0;
+    const kwh  = Math.max(0, curr-prev);
+    const inp  = document.getElementById(`kwh_${l.id}`);
+    const vel  = document.getElementById(`kwhval_${l.id}`);
+    if (inp) inp.value = kwh||'';
+    const costo = precio>0&&kwh>0 ? ` = S/ ${(kwh*precio).toFixed(2)}`:'';
+    if (vel) vel.textContent = kwh>0 ? `${kwh} kWh${costo}`:'— kWh';
+  });
+}
+
+function checkPct() {
+  const total = locales.reduce((s,l)=>s+(parseFloat(document.getElementById(`pct_${l.id}`)?.value)||0),0);
+  const ind = document.getElementById('pctTotal');
+  const val = document.getElementById('pctVal');
+  if(ind&&val){ val.textContent=total+'%'; ind.className='pct-total '+(Math.abs(total-100)<0.01?'ok':'error'); }
+  return Math.abs(total-100)<0.01;
+}
+
+function toast(msg, color='var(--green)') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.background = color;
+  t.style.color = color==='var(--green)'?'#000':'#fff';
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2500);
+}
+
+// ── CALCULAR ──────────────────────────────────────────
+function calcular() {
+  const totalAgua = parseFloat(document.getElementById('totalAgua').value)||0;
+  const preciokwh = parseFloat(document.getElementById('preciokwh').value)||0;
+  const mes       = document.getElementById('mes').value.trim()||'Sin especificar';
+  if (preciokwh<=0) { alert('Ingresa el precio por kWh.'); return; }
+
+  let totalKwh = 0;
+  const kwhs = {};
+  locales.forEach(l => {
+    const p = parseFloat(document.getElementById(`prev_${l.id}`)?.value)||0;
+    const c = parseFloat(document.getElementById(`curr_${l.id}`)?.value)||0;
+    const k = Math.max(0,c-p);
+    kwhs[l.id]=k; totalKwh+=k;
+  });
+
+  const pcts = {};
+  locales.forEach(l => { pcts[l.id]=(parseFloat(document.getElementById(`pct_${l.id}`)?.value)||0)/100; });
+
+  const totalLuz = totalKwh*preciokwh;
+  const resultados = locales.map(l => {
+    const luz=kwhs[l.id]*preciokwh, agua=totalAgua*pcts[l.id], internet=l.internet||0;
+    return {...l, kwh:kwhs[l.id], luz, agua, internet, total:luz+agua+internet, pct:pcts[l.id]*100};
+  });
+
+  ultimosResultados = {mes, preciokwh, totalAgua, totalLuz, totalKwh, resultados, fecha:new Date().toLocaleDateString('es-PE')};
+
+  // Cards resultado
+  const cont = document.getElementById('cardsResultado');
+  cont.innerHTML='';
+  resultados.forEach(r => {
+    const div = document.createElement('div');
+    div.className='resultado-card'; div.style.borderColor=r.color+'44';
+    div.innerHTML=`
+      <div class="resultado-header">
+        <div class="local-dot" style="background:${r.color}"></div>
+        <div class="resultado-nombre">${r.nombre}</div>
+      </div>
+      <div class="resultado-total">S/ ${r.total.toFixed(2)}</div>
+      <div class="resultado-desglose">
+        <div class="desglose-item">
+          <span class="desglose-label">⚡ LUZ</span>
+          <span class="desglose-val" style="color:${r.color}">S/ ${r.luz.toFixed(2)}</span>
+          <span style="font-size:10px;color:var(--muted)">${r.kwh} kWh × S/${preciokwh.toFixed(3)}</span>
+        </div>
+        <div class="desglose-item">
+          <span class="desglose-label">💧 AGUA</span>
+          <span class="desglose-val" style="color:var(--blue)">S/ ${r.agua.toFixed(2)}</span>
+          <span style="font-size:10px;color:var(--muted)">${r.pct.toFixed(0)}% del recibo</span>
+        </div>
+        ${r.internet>0?`
+        <div class="desglose-item" style="grid-column:1/-1">
+          <span class="desglose-label">📶 INTERNET</span>
+          <span class="desglose-val" style="color:var(--orange)">S/ ${r.internet.toFixed(2)}</span>
+          <span style="font-size:10px;color:var(--muted)">Fijo mensual</span>
+        </div>`:''}
+      </div>`;
+    cont.appendChild(div);
+  });
+
+  const totalFinal = resultados.reduce((s,r)=>s+r.total,0);
+  document.getElementById('totalCobrar').textContent=`S/ ${totalFinal.toFixed(2)}`;
+
+  // Mensajes
+  const msgsec = document.getElementById('mensajesSection');
+  msgsec.innerHTML='';
+  resultados.forEach(r => {
+    const msg = generarMensaje(r, mes, preciokwh);
+    const div = document.createElement('div');
+    div.className='msg-local-card'; div.style.borderColor=r.color+'33';
+    const hdr = document.createElement('div'); hdr.className='msg-local-header';
+    hdr.innerHTML=`<div class="local-dot" style="background:${r.color}"></div><div class="msg-local-nombre">${r.nombre}</div>`;
+    const pre = document.createElement('pre'); pre.className='msg-text'; pre.id='msg_'+r.id; pre.textContent=msg;
+    const btn = document.createElement('button'); btn.className='copy-msg-btn'; btn.textContent='📋 Copiar mensaje';
+    btn.onclick = ()=>copiarMensaje(r.id, btn);
+    div.appendChild(hdr); div.appendChild(pre); div.appendChild(btn);
+    msgsec.appendChild(div);
+  });
+
+  document.getElementById('resultados').classList.add('visible');
+  setTimeout(()=>document.getElementById('resultados').scrollIntoView({behavior:'smooth',block:'start'}),100);
+}
+
+// ── MENSAJE ───────────────────────────────────────────
+function generarMensaje(r, mes, preciokwh) {
+  const saludo = `Buen día 👋 Le envío el detalle de servicios correspondiente a *${mes}*. Cualquier consulta, con gusto.`;
+  const l1 = r.kwh>0 ? `⚡ Luz:      S/ ${r.luz.toFixed(2)}\n   ${r.kwh} kWh × S/${preciokwh.toFixed(3)}/kWh` : `⚡ Luz:      S/ 0.00`;
+  const l2 = r.agua>0 ? `💧 Agua:     S/ ${r.agua.toFixed(2)}\n   ${r.pct.toFixed(0)}% del recibo total` : `💧 Agua:     S/ 0.00`;
+  const l3 = r.internet>0 ? `\n📶 Internet: S/ ${r.internet.toFixed(2)}\n   Cobro fijo mensual` : '';
+  return `${saludo}\n\n${'─'.repeat(24)}\n\n${l1}\n\n${l2}${l3}\n\n${'─'.repeat(24)}\n💰 *TOTAL: S/ ${r.total.toFixed(2)}*`;
+}
+
+// ── COPIAR ────────────────────────────────────────────
+function copiarMensaje(id, btn) {
+  const el = document.getElementById('msg_'+id);
+  const txt = el ? el.textContent : '';
+  if (!txt) return;
+  const ok = ()=>{ btn.textContent='✅ Copiado!'; setTimeout(()=>btn.textContent='📋 Copiar mensaje',2000); };
+  const fail = ()=>{ btn.textContent='❌ Error'; setTimeout(()=>btn.textContent='📋 Copiar mensaje',2000); };
+  if (navigator.clipboard&&navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(txt).then(ok).catch(()=>fallbackCopy(txt,ok,fail));
+  } else { fallbackCopy(txt,ok,fail); }
+}
+function fallbackCopy(txt,ok,fail) {
+  const ta=document.createElement('textarea');
+  ta.value=txt; ta.style.cssText='position:fixed;top:-9999px;left:-9999px;opacity:0;font-size:16px';
+  document.body.appendChild(ta); ta.focus(); ta.select();
+  try { document.execCommand('copy')?ok():fail(); } catch(e){fail();}
+  document.body.removeChild(ta);
+}
+
+// ── HISTORIAL ─────────────────────────────────────────
+function guardarHistorial() {
+  if (!ultimosResultados) return;
+  const h = JSON.parse(localStorage.getItem('locales_sb')||'[]');
+  const idx = h.findIndex(x=>x.mes===ultimosResultados.mes);
+  if (idx>=0) { if(!confirm(`Ya existe "${ultimosResultados.mes}". ¿Sobreescribir?`)) return; h.splice(idx,1); }
+  h.unshift(ultimosResultados);
+  localStorage.setItem('locales_sb',JSON.stringify(h));
+  toast('✅ Guardado en historial');
+}
+
+function renderHistorial() {
+  const h = JSON.parse(localStorage.getItem('locales_sb')||'[]');
+  const cont = document.getElementById('historialList');
+  cont.innerHTML='';
+  if (h.length===0) {
+    cont.innerHTML=`<div class="historial-empty"><span>📁</span>Aún no hay registros.<br>Calcula un mes y presiona<br>"Guardar".</div>`;
+    return;
+  }
+  h.forEach((registro, idx) => {
+    const tf = registro.resultados.reduce((s,r)=>s+r.total,0);
+    const card = document.createElement('div'); card.className='hist-card';
+    const locHtml = registro.resultados.map(r=>`
+      <div class="hist-local">
+        <span class="hn">${r.nombre}</span>
+        <span class="hv">S/ ${r.total.toFixed(2)}</span>
+      </div>`).join('');
+    card.innerHTML=`
+      <div class="hist-header">
+        <div class="hist-mes">${registro.mes}</div>
+        <div class="hist-fecha">${registro.fecha}</div>
+      </div>
+      <div class="hist-total">S/ ${tf.toFixed(2)}</div>
+      <div class="hist-locales">${locHtml}</div>
+      <div class="hist-actions">
+        <button class="hist-del">🗑 Eliminar</button>
+        <button class="hist-notas">📊 Excel</button>
+      </div>`;
+    card.querySelector('.hist-del').addEventListener('click', ()=>eliminarRegistro(idx));
+    card.querySelector('.hist-notas').addEventListener('click', ()=>exportarXlsx(registro));
+    cont.appendChild(card);
+  });
+}
+
+function eliminarRegistro(idx) {
+  if (!confirm('¿Eliminar este registro?')) return;
+  const h = JSON.parse(localStorage.getItem('locales_sb')||'[]');
+  h.splice(idx,1);
+  localStorage.setItem('locales_sb',JSON.stringify(h));
+  renderHistorial();
+  toast('🗑 Eliminado','var(--red)');
+}
+
+// ── EXCEL ─────────────────────────────────────────────
+function exportarXlsx(datos) {
+  const d = datos||ultimosResultados;
+  if (!d) return;
+  const {mes, preciokwh, totalAgua, resultados, fecha} = d;
+  const esc = s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const ordenados = ORDEN_EXCEL.map(id=>resultados.find(r=>r.id===id)).filter(Boolean);
+  resultados.forEach(r=>{ if(!ORDEN_EXCEL.includes(r.id)) ordenados.push(r); });
+
+  let sheetsXml='';
+  ordenados.forEach(r=>{
+    const nombre=esc(r.nombre);
+    const filas=[
+      ['Mes',esc(mes)],['Local',nombre],['Fecha',esc(fecha)],['',''],
+      ['CONCEPTO','MONTO (S/)'],
+      ['Luz',r.luz.toFixed(2)],
+      ['  kWh consumidos',r.kwh],
+      ['  Tarifa por kWh',preciokwh.toFixed(3)],
+      ['Agua',r.agua.toFixed(2)],
+      ['  % asignado',r.pct.toFixed(0)+'%'],
+      ['  Total recibo agua',totalAgua.toFixed(2)],
+    ];
+    if (r.internet>0) filas.push(['Internet (fijo)',r.internet.toFixed(2)]);
+    filas.push(['',''],['TOTAL A PAGAR',r.total.toFixed(2)]);
+    const rows=filas.map(([a,b])=>`<Row><Cell><Data ss:Type="String">${esc(String(a))}</Data></Cell><Cell><Data ss:Type="${isNaN(b)?'String':'Number'}">${esc(String(b))}</Data></Cell></Row>`).join('');
+    sheetsXml+=`<Worksheet ss:Name="${nombre}"><Table>${rows}</Table></Worksheet>`;
+  });
+
+  const xml=`<?xml version="1.0" encoding="UTF-8"?><?mso-application progid="Excel.Sheet"?><Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">${sheetsXml}</Workbook>`;
+  const a=document.createElement('a');
+  a.href='data:application/vnd.ms-excel;charset=utf-8,'+encodeURIComponent(xml);
+  a.download=`cobros_${mes.replace(/\s/g,'_')}.xls`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  toast('📊 Excel descargado');
+}
+
+// ── INIT ──────────────────────────────────────────────
+buildLocales();
+initBanner();
+</script>
+</body>
+</html>
